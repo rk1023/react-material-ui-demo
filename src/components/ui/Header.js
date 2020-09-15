@@ -69,6 +69,34 @@ const useStyles = makeStyles(theme => (
             "&:hover": {
                 backgroundColor: "transparent"
             }
+        },
+        menu : {
+            backgroundColor : theme.palette.common.blue,
+            color:"white",
+            // borderRedius: "0px",
+            borderBottomRightRadius: "0px",
+            borderTopRightRadius: "0px",
+            borderTopLeftRadius: "0px",
+            borderBottomLeftRadius: "0px",
+        },
+        menuItem:{
+            ...theme.typography.tab,
+            opacity: 0.7,
+           
+            "&:hover": {
+                opacity: 1.5,
+                // backgroundColor : theme.palette.common.orange,
+            }
+        },
+
+        selectedMenuItem:{
+            ...theme.typography.tab,
+            opacity: 0.7,
+            backgroundColor : theme.palette.common.orange,
+            // "&:hover": {
+            //     opacity: 1.5,
+            //     // backgroundColor : theme.palette.common.orange,
+            // }
         }
     }
 ));
@@ -78,6 +106,7 @@ export function Header(props) {
     const [value, setValue] = useState(0)
     const [anchorEl, setAnchorEl] = useState(null);
     const [open, setOpen] = useState(false);
+    const [selectedIndex, setSelectedIndex] = useState(0);
     const anchorRef = useRef(null);
 
     const handleChange = (e, value) => {
@@ -93,6 +122,18 @@ export function Header(props) {
         setAnchorEl(null)
         setOpen(false)
     }
+
+    const handleMenuItemClick = (e,i) => {
+        setAnchorEl(null)
+        setOpen(false)
+        setSelectedIndex(i)
+    }
+
+    const menuOptions = [{name: "Services", link: "/services"},
+    {name: "Software Development", link: "/softwareDevelopment"},
+    {name: "Web Development", link: "/webDevelopment"},
+    {name: "Mobile Development", link: "/mobileDevelopment"}
+] 
 
     useEffect(() => {
         if (window.location.pathname === "/") {
@@ -143,18 +184,28 @@ export function Header(props) {
                             className={classes.button}>Logout</Button>
                         <Menu id="service-menu" anchorEl={anchorEl} open={open}
                             onClose={handleClose}
+                            classes={{paper: classes.menu}}
                             MenuListProps={{ onMouseLeave: handleClose }}
+                            elevation={0}
                         >
-                            <MenuItem onClick={() => { handleClose(); setValue(2) }} component={Link} to="/services">
-                                Services
-                            </MenuItem>
-                            <MenuItem onClick={() => { handleClose(); setValue(2) }} component={Link} to="/softwareDevelopment">
-                                Software Development
-                            </MenuItem>
-                            <MenuItem onClick={() => { handleClose(); setValue(2) }} component={Link} to="/webDevelopment">
-                                Web Development</MenuItem>
-                            <MenuItem onClick={() => { handleClose(); setValue(2) }} component={Link} to="/mobileDevelopment">
-                                Mobile Development</MenuItem>
+                           {menuOptions.map((option,i)=>(
+                               <MenuItem
+                                component={Link} 
+                                to={option.link}
+                                key={option}
+                                classes={{root: i !== selectedIndex ? classes.menuItem: classes.selectedMenuItem}}
+                                onClick={(event)=>{handleMenuItemClick(event,i);
+                                setValue(2);
+                                handleClose()
+                                
+                            }}
+                            selected={i === selectedIndex && value === 2 }
+                               >
+                               {option.name}
+                               </MenuItem>
+                           )
+                           )
+                           }
 
                         </Menu>
                     </Toolbar>
